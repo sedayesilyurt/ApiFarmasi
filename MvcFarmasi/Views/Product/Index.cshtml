@@ -1,0 +1,72 @@
+﻿@model IEnumerable<MvcFarmasi.Models.Products>
+
+@{
+    ViewData["Title"] = "Ürünler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<p>
+    <a asp-action="Create">Ürün Ekle</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Ürün adı
+            </th>
+            <th>
+                Fiyat
+            </th>
+            <th>
+                Stok
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+               @string.Format("{0:C}",item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stok)
+            </td>
+            <td>
+                @*@Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
+                <a href="javascript:void(0)" class="add-basket" data-id="@item.Id">Sepete Ekle</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_ValidationScriptsPartial")
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.js" integrity="sha512-MqEDqB7me8klOYxXXQlB4LaNf9V9S0+sG1i8LtPOYmHqICuEZ9ZLbyV3qIfADg2UJcLyCm4fawNiFvnYbcBJ1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(".add-basket").click(function () {
+            $.ajax({
+                url: '/Basket/Add',
+                type: 'POST',
+                dataType: 'json',
+                data: { productId: $(this).attr("data-id")},
+                success: function (result) {
+                    if(result.status){
+                      swal("Tebrikler!", "Ürün sepetine başarıyla eklendi!", "success")
+                        $("#basket").html(`${result.count} &#128722;`);
+                    }
+                }
+           });
+        });
+    </script>
+}
